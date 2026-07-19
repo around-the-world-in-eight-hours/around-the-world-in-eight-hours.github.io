@@ -1,210 +1,416 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Around Chengdu in Eight Hours</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Arial", sans-serif;
-        }
-        body {
-            background-color: #f0f7f4;
-            padding: 20px;
-        }
-        .window {
-            border: 2px solid #0054e9;
-            border-radius: 4px;
-            background-color: #f0f7f4;
-            max-width: 900px;
-            margin: 0 auto 30px;
-            overflow: hidden;
-            display: none;
-        }
-        .window.active {
-            display: block;
-        }
-        .title-bar {
-            background-color: #0054e9;
-            color: white;
-            padding: 6px 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 14px;
-        }
-        .title-bar .controls span {
-            margin-left: 8px;
-            cursor: pointer;
-        }
-        .menu-bar {
-            background-color: #e0e9e6;
-            padding: 8px 15px;
-            display: flex;
-            gap: 25px;
-            border-bottom: 1px solid #ccc;
-        }
-        .menu-bar .menu-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            padding: 2px 0;
-        }
-        /* 核心修复：下拉菜单紧贴菜单，消除空隙 */
-        .tour-dropdown {
-            position: relative;
-        }
-        .tour-dropdown .dropdown {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            background-color: white;
-            border: 1px solid #ccc;
-            border-top: none;
-            min-width: 130px;
-            display: none;
-            z-index: 999;
-        }
-        .tour-dropdown:hover .dropdown {
-            display: block;
-        }
-        .tour-dropdown .dropdown div {
-            padding: 6px 12px;
-            font-size: 13px;
-            cursor: pointer;
-        }
-        .tour-dropdown .dropdown div:hover {
-            background-color: #0054e9;
-            color: #fff;
-        }
-        .content {
-            padding: 20px;
-            font-size: 16px;
-            line-height: 1.6;
-        }
-        .welcome-text {
-            margin-bottom: 20px;
-        }
-        .globe-container {
-            text-align: center;
-            margin: 20px 0;
-        }
-        .globe {
-            width: 200px;
-            height: auto;
-        }
-
-        /* 选择弹窗 */
-        .selection-popup {
-            border: 2px solid #0054e9;
-            border-radius: 4px;
-            background-color: #f0f7f4;
-            padding: 40px 20px;
-            text-align: center;
-            max-width: 900px;
-            margin: 30px auto;
-            display: none;
-        }
-        .selection-popup.active {
-            display: block;
-        }
-        .selection-title {
-            font-size: 36px;
-            font-weight: bold;
-            color: #0054e9;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-            margin-bottom: 10px;
-        }
-        .city-name {
-            font-size: 60px;
-            font-weight: bold;
-            color: #e67e22;
-            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
-            background-color: #f1c40f;
-            display: inline-block;
-            padding: 5px 20px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-        }
-        .lets-go {
-            background-color: #87e8de;
-            color: #2c3e50;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-size: 20px;
-            font-weight: bold;
-            display: inline-block;
-            transform: rotate(-5deg);
-            box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-        }
-
-        .chengdu-content {
-            display: flex;
-            gap: 20px;
-            padding: 20px;
-            font-size: 16px;
-            line-height: 1.7;
-        }
-        .text-column {
-            flex: 2;
-        }
-        .image-column {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        .image-placeholder {
-            width: 100%;
-            height: 180px;
-            background-color: #e0e9e6;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #666;
-            font-size: 14px;
-        }
-        .line-number {
-            color: #666;
-            font-size: 13px;
-            margin-right: 8px;
-        }
-        .back-button {
-            text-align: right;
-            padding: 10px 20px;
-            border-top: 1px solid #ccc;
-            font-size: 14px;
-            color: #0054e9;
-            cursor: pointer;
-        }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Around Chengdu in Eight Hours</title>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Arial", sans-serif;
+    }
+    body {
+        background-color: #f0f7f4;
+        padding: 20px;
+    }
+    /* 登录全屏遮罩 */
+    .login-mask {
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0,0,0,0.6);
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 999999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .login-box {
+        background: #fff;
+        width: 420px;
+        padding: 30px;
+        border-radius: 8px;
+    }
+    .login-title {
+        text-align: center;
+        font-size: 24px;
+        margin-bottom: 25px;
+        color: #0054e9;
+    }
+    .login-item {
+        margin-bottom: 18px;
+    }
+    .login-item label {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 15px;
+    }
+    .login-item input {
+        width: 100%;
+        height: 38px;
+        padding: 0 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 15px;
+    }
+    .code-row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+    .code-row input {
+        flex: 1;
+    }
+    .code-img {
+        height: 38px;
+        width: 120px;
+        object-fit: cover;
+        border: 1px solid #ccc;
+        cursor: pointer;
+    }
+    .login-btn {
+        width: 100%;
+        height: 42px;
+        background: #0054e9;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+    .login-btn:hover {
+        background: #0043bd;
+    }
+    /* 窗口基础样式 */
+    .window {
+        border: 2px solid #0054e9;
+        border-radius: 4px;
+        background-color: #f0f7f4;
+        max-width: 900px;
+        margin: 0 auto 30px;
+        overflow: visible;
+        display: none;
+    }
+    .window.active {
+        display: block;
+    }
+    /* 窗口标题栏 */
+    .title-bar {
+        background-color: #0054e9;
+        color: #fff;
+        padding: 6px 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 14px;
+    }
+    /* 右上角用户信息区域（登录后显示） */
+    .user-area {
+        display: none;
+        align-items: center;
+        gap: 8px;
+        margin-right: 15px;
+    }
+    .avatar {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        border: 1px #fff solid;
+        /* 占位，后续替换图片地址 */
+        background: #ddd;
+    }
+    .title-bar .controls span {
+        margin-left: 8px;
+        cursor: pointer;
+        padding: 2px 6px;
+        border-radius: 2px;
+    }
+    .title-bar .controls span:hover {
+        background: rgba(255,255,0.2);
+    }
+    /* 顶部菜单栏 */
+    .menu-bar {
+        background-color: #e0e9e6;
+        padding: 8px 15px;
+        display: flex;
+        gap: 25px;
+        border-bottom: 1px solid #ccc;
+    }
+    .menu-bar .menu-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        padding: 2px 0;
+    }
+    /* 一级Tour下拉容器 + 缓冲层防消失 */
+    .tour-dropdown {
+        position: relative;
+    }
+    .tour-dropdown::after {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 10px;
+        left: 0;
+        top: 100%;
+        z-index: 997;
+    }
+    .tour-dropdown .menu-text::after {
+        content: " ▾";
+        font-size: 12px;
+    }
+    /* 一级下拉面板 */
+    .tour-dropdown .dropdown {
+        position: absolute;
+        top: calc(100% + 10px);
+        left: 0;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        min-width: 130px;
+        display: none;
+        z-index: 998;
+    }
+    .tour-dropdown:hover .dropdown {
+        display: block;
+    }
+    /* 菜单项通用 - 默认文字黑色，不会空白看不见 */
+    .dropdown-item {
+        position: relative;
+        padding: 7px 14px;
+        font-size: 13px;
+        cursor: pointer;
+        white-space: nowrap;
+        color: #000;
+        background: #fff;
+    }
+    .dropdown-item:hover {
+        background-color: #0054e9;
+        color: #fff;
+    }
+    /* 二级/三级右侧子菜单 + 上下缓冲 */
+    .submenu {
+        position: absolute;
+        top: -5px;
+        left: 100%;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        min-width: 130px;
+        display: none;
+        z-index: 999;
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+    .dropdown-item:hover > .submenu {
+        display: block;
+    }
+    /* 页面正文区域 */
+    .content {
+        padding: 20px;
+        font-size: 16px;
+        line-height: 1.6;
+    }
+    .welcome-text {
+        margin-bottom: 20px;
+    }
+    .globe-container {
+        text-align: center;
+        margin: 20px 0;
+    }
+    .globe {
+        width: 200px;
+        height: auto;
+    }
+    /* 选择弹窗（最高层级，不会被菜单遮挡） */
+    .selection-popup {
+        border: 2px solid #0054e9;
+        border-radius: 4px;
+        background-color: #f0f7f4;
+        padding: 40px 20px;
+        text-align: center;
+        max-width: 900px;
+        margin: 30px auto;
+        display: none;
+        position: relative;
+        z-index: 10000;
+    }
+    .selection-popup.active {
+        display: block;
+    }
+    .selection-title {
+        font-size: 36px;
+        font-weight: bold;
+        color: #0054e9;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        margin-bottom: 10px;
+    }
+    .city-name {
+        font-size: 60px;
+        font-weight: bold;
+        color: #e67e22;
+        text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+        background-color: #f1c40f;
+        display: inline-block;
+        padding: 5px 20px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+    }
+    /* Let's go 按钮 */
+    .lets-go {
+        background-color: #87e8de;
+        color: #2c3e50;
+        padding: 8px 20px;
+        border-radius: 20px;
+        font-size: 20px;
+        font-weight: bold;
+        display: inline-block;
+        transform: rotate(-5deg);
+        box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        cursor: pointer;
+    }
+    /* 成都正文双栏布局 */
+    .chengdu-content {
+        display: flex;
+        gap: 20px;
+        padding: 20px;
+        font-size: 16px;
+        line-height: 1.7;
+    }
+    .text-column {
+        flex: 2;
+    }
+    .image-column {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+    .image-placeholder {
+        width: 100%;
+        height: 180px;
+        background-color: #e0e9e6;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #666;
+        font-size: 14px;
+    }
+    .line-number {
+        color: #666;
+        font-size: 13px;
+        margin-right: 8px;
+    }
+    /* 返回按钮 */
+    .back-button {
+        text-align: right;
+        padding: 10px 20px;
+        border-top: 1px solid #ccc;
+        font-size: 14px;
+        color: #0054e9;
+        cursor: pointer;
+    }
+    .back-button:hover {
+        background: #e8f0fb;
+    }
+    /* 最小化全屏提示层 */
+    .min-notice {
+        width: 100%;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: #f0f7f4;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        color: #333;
+        z-index: 99999;
+    }
+    .min-notice.show {
+        display: flex;
+    }
+</style>
 </head>
 <body>
+<!-- 登录遮罩（页面初始默认显示） -->
+<div class="login-mask" id="loginMask">
+    <div class="login-box">
+        <!-- 修改标题为 Login -->
+        <h3 class="login-title">Login</h3>
+        <div class="login-item">
+            <label>账号</label>
+            <input type="text" id="userAccount" placeholder="请输入账号">
+        </div>
+        <div class="login-item">
+            <label>密码</label>
+            <input type="password" id="userPwd" placeholder="请输入密码">
+        </div>
+        <div class="login-item">
+            <label>验证码</label>
+            <div class="code-row">
+                <input type="text" id="userCode" placeholder="输入验证码">
+                <img class="code-img" id="codeImg" alt="验证码" onclick="refreshCode()">
+            </div>
+        </div>
+        <button class="login-btn" onclick="loginCheck()">登录</button>
+    </div>
+</div>
 
-<!-- 1. 欢迎页（默认显示） -->
-<div class="window active" id="welcomePage">
+<!-- 最小化全屏文字界面 -->
+<div class="min-notice" id="minNotice">
+    Created by 'picture1' in 'picture2'.
+</div>
+
+<!-- 页面1：欢迎首页（登录成功才显示） -->
+<div class="window" id="welcomePage">
     <div class="title-bar">
         <span>Around Chengdu in Eight Hours</span>
+        <!-- 登录后显示头像+用户名区域 -->
+        <div class="user-area" id="userAreaWelcome">
+            <!-- 头像占位，后续替换src为你的图片 -->
+            <img class="avatar" id="avatarWelcome" src="" alt="用户头像">
+            <span>Hello, czy!</span>
+        </div>
         <div class="controls">
-            <span>−</span><span>□</span><span>✕</span>
+            <span onclick="windowMin()">−</span>
+            <span onclick="windowMax()">□</span>
+            <span onclick="closeAllWindow()">✕</span>
         </div>
     </div>
     <div class="menu-bar">
         <div class="menu-item tour-dropdown">
-            <span>🗺️ Tour</span>
+            <span class="menu-text">🗺️ Tour</span>
             <div class="dropdown">
-                <div onclick="goToChengdu()">Jinli</div>
-                <div onclick="goToChengdu()">Kuanzhai Alleys</div>
-                <div onclick="goToChengdu()">Chunxi Road</div>
-                <div onclick="goToChengdu()">Panda Base</div>
-                <div onclick="goToChengdu()">Others</div>
+                <div class="dropdown-item">
+                    Asia ▸
+                    <div class="submenu">
+                        <div class="dropdown-item">
+                            China ▸
+                            <div class="submenu">
+                                <div class="dropdown-item" onclick="goToChengdu()">Chengdu</div>
+                                <div class="dropdown-item">Beijing</div>
+                                <div class="dropdown-item">Shanghai</div>
+                                <div class="dropdown-item">Guangzhou</div>
+                            </div>
+                        </div>
+                        <div class="dropdown-item">Japan</div>
+                        <div class="dropdown-item">Korea</div>
+                        <div class="dropdown-item">India</div>
+                        <div class="dropdown-item">Thailand</div>
+                    </div>
+                </div>
+                <div class="dropdown-item">Africa</div>
+                <div class="dropdown-item">Europe</div>
+                <div class="dropdown-item">America</div>
+                <div class="dropdown-item">Others</div>
             </div>
         </div>
         <div class="menu-item"><span>📷 Camera</span></div>
@@ -212,38 +418,62 @@
     </div>
     <div class="content">
         <div class="welcome-text">
-            Welcome to "Around Chengdu in Eight Hours". I'm your tour guide, Robin. Have you noticed the "Tour" icon at the top of the page? Just click on it, and you can visit Jinli, Kuanzhai Alleys, Chunxi Road, the Panda Base and more in only eight hours!
+            Welcome to "Around Chengdu in Eight Hours". I'm your tour guide, Robin. Have you noticed the "Tour" icon at the top of the page? Just click on it, and you can visit Asia, Africa, Europe, America and more in only eight hours!
         </div>
         <div class="globe-container">
-            <img src="https://i.imgur.com/8ZkFZ7H.png" alt="Globe with airplane" class="globe">
+            <img src="https://i.imgur.com/8ZkFZ7H.png" alt="Globe with airplane" class="globe" />
         </div>
     </div>
 </div>
 
-<!-- 2. 选择页面（点击Tour后显示） -->
+<!-- 页面2：选中Chengdu过渡弹窗 -->
 <div class="selection-popup" id="choosePage">
     <div class="selection-title">YOU HAVE CHOSEN:</div>
     <div class="city-name">CHENGDU</div>
-    <div class="lets-go">Let's go!</div>
+    <div class="lets-go" onclick="skipTimer()">Let's go!</div>
 </div>
 
-<!-- 3. 成都正文页面（3秒后自动显示） -->
+<!-- 页面3：成都正文详情页 -->
 <div class="window" id="contentPage">
     <div class="title-bar">
         <span>Around Chengdu in Eight Hours - Chengdu</span>
+        <!-- 同步添加用户头像文字区域 -->
+        <div class="user-area" id="userAreaContent">
+            <img class="avatar" id="avatarContent" src="" alt="用户头像">
+            <span>Hello, czy!</span>
+        </div>
         <div class="controls">
-            <span>−</span><span>□</span><span>✕</span>
+            <span onclick="windowMin()">−</span>
+            <span onclick="windowMax()">□</span>
+            <span onclick="closeAllWindow()">✕</span>
         </div>
     </div>
     <div class="menu-bar">
         <div class="menu-item tour-dropdown">
-            <span>🗺️ Tour</span>
+            <span class="menu-text">🗺️ Tour</span>
             <div class="dropdown">
-                <div>Jinli</div>
-                <div>Kuanzhai Alleys</div>
-                <div>Chunxi Road</div>
-                <div>Panda Base</div>
-                <div>Others</div>
+                <div class="dropdown-item">
+                    Asia ▸
+                    <div class="submenu">
+                        <div class="dropdown-item">
+                            China ▸
+                            <div class="submenu">
+                                <div class="dropdown-item" onclick="goToChengdu()">Chengdu</div>
+                                <div class="dropdown-item">Beijing</div>
+                                <div class="dropdown-item">Shanghai</div>
+                                <div class="dropdown-item">Guangzhou</div>
+                            </div>
+                        </div>
+                        <div class="dropdown-item">Japan</div>
+                        <div class="dropdown-item">Korea</div>
+                        <div class="dropdown-item">India</div>
+                        <div class="dropdown-item">Thailand</div>
+                    </div>
+                </div>
+                <div class="dropdown-item">Africa</div>
+                <div class="dropdown-item">Europe</div>
+                <div class="dropdown-item">America</div>
+                <div class="dropdown-item">Others</div>
             </div>
         </div>
         <div class="menu-item"><span>📷 Camera</span></div>
@@ -259,7 +489,7 @@
             <br>
             <p>In the northwest of the city is the Chengdu Research Base of Giant Panda Breeding. With lush bamboo forests, gentle streams and cute pandas rolling around, it's a good place to relax and get close to these national treasures after a hard day's walking.</p>
             <br>
-            <p><span class="line-number">15</span>When you visit Chengdu, don't miss Du Fu Thatched Cottage. It has been famous for its poetic culture since the Tang Dynasty. Have you ever heard of the poem *Thatched Cottage Broken by the Autumn Wind*? It was written right here by the great poet Du Fu, and the quiet gardens still carry the fragrance of poetry.</p>
+            <p><span class="line-number">15</span>When you visit Chengdu, don't miss Du Fu Thatched Cottage. It has been famous for its poetic culture since the Tang Dynasty. Have you ever heard of the poem *Thatched Cottage Broken by the Autumn Wind*?</p>
             <br>
             <p><span class="line-number">20</span>OK, so much for Chengdu. There's a "Back" icon at the bottom of the page. Click on it, pick another spot like Kuanzhai Alleys or the Jinsha Site, and then start your new tour!</p>
         </div>
@@ -269,20 +499,113 @@
             <div class="image-placeholder">[Du Fu Cottage Photo]</div>
         </div>
     </div>
-    <div class="back-button">↩️ Back</div>
+    <div class="back-button" onclick="backToHome()">↩️ Back</div>
 </div>
 
 <script>
-// 点击 Tour 菜单后进入选择页
+// 全局定时器
+let waitTimer = null;
+// 10张验证码图片数组（全部文字ilovemath）
+const codeImgList = [
+    "https://picsum.photos/id/1011/120/38",
+    "https://picsum.photos/id/1012/120/38",
+    "https://picsum.photos/id/1013/120/38",
+    "https://picsum.photos/id/1014/120/38",
+    "https://picsum.photos/id/1015/120/38",
+    "https://picsum.photos/id/1016/120/38",
+    "https://picsum.photos/id/1017/120/38",
+    "https://picsum.photos/id/1018/120/38",
+    "https://picsum.photos/id/1019/120/38",
+    "https://picsum.photos/id/1020/120/38"
+];
+// 页面加载随机验证码图片
+window.onload = function(){
+    refreshCode();
+}
+// 刷新验证码
+function refreshCode(){
+    const randomIdx = Math.floor(Math.random() * codeImgList.length);
+    document.getElementById("codeImg").src = codeImgList[randomIdx];
+}
+// 登录校验函数
+function loginCheck(){
+    const acc = document.getElementById("userAccount").value.trim();
+    const pwd = document.getElementById("userPwd").value.trim();
+    const code = document.getElementById("userCode").value.trim().toLowerCase();
+    // 校验规则
+    if(acc !== "czy@tour"){
+        alert("账号错误，请重新输入");
+        return;
+    }
+    if(pwd !== "czy201177"){
+        alert("密码错误，请重新输入");
+        return;
+    }
+    if(code !== "ilovemath"){
+        alert("验证码错误，不区分大小写");
+        refreshCode();
+        document.getElementById("userCode").value = "";
+        return;
+    }
+    // 全部正确：关闭登录弹窗，显示欢迎页 + 展示头像用户名区域
+    document.getElementById("loginMask").style.display = "none";
+    document.getElementById("welcomePage").classList.add("active");
+    // 显示右上角Hello+头像
+    document.getElementById("userAreaWelcome").style.display = "flex";
+    document.getElementById("userAreaContent").style.display = "flex";
+}
+// 点击Chengdu：重置所有页面，避免重叠bug
 function goToChengdu() {
-    document.getElementById('welcomePage').classList.remove('active');
-    document.getElementById('choosePage').classList.add('active');
-    
-    // 3秒后自动跳转正文
-    setTimeout(function() {
-        document.getElementById('choosePage').classList.remove('active');
-        document.getElementById('contentPage').classList.add('active');
+    clearTimeout(waitTimer);
+    document.querySelectorAll(".window").forEach(el => el.classList.remove("active"));
+    document.getElementById("choosePage").classList.remove("active");
+    hideMinNotice();
+    document.getElementById("choosePage").classList.add("active");
+    waitTimer = setTimeout(function() {
+        skipTimer();
     }, 3000);
+}
+// Let's go 一键跳过等待
+function skipTimer() {
+    clearTimeout(waitTimer);
+    document.getElementById("choosePage").classList.remove("active");
+    document.getElementById("contentPage").classList.add("active");
+}
+// 返回首页
+function backToHome() {
+    clearTimeout(waitTimer);
+    hideMinNotice();
+    document.querySelectorAll(".window").forEach(el => el.classList.remove("active"));
+    document.getElementById("choosePage").classList.remove("active");
+    document.getElementById("welcomePage").classList.add("active");
+}
+// 关闭全部窗口
+function closeAllWindow() {
+    clearTimeout(waitTimer);
+    hideMinNotice();
+    document.getElementById("welcomePage").style.display = "none";
+    document.getElementById("choosePage").style.display = "none";
+    document.getElementById("contentPage").style.display = "none";
+    alert("网页窗口已关闭，刷新页面可重新打开");
+}
+// 最小化
+function windowMin() {
+    clearTimeout(waitTimer);
+    document.querySelectorAll(".window").forEach(el => el.style.display = "none");
+    document.getElementById("choosePage").style.display = "none";
+    document.getElementById("minNotice").classList.add("show");
+}
+// 【修复最大化BUG】标准化清理流程，无异常跳转
+function windowMax() {
+    clearTimeout(waitTimer);
+    hideMinNotice();
+    document.querySelectorAll(".window").forEach(el => el.classList.remove("active"));
+    document.getElementById("choosePage").classList.remove("active");
+    document.getElementById("welcomePage").classList.add("active");
+}
+// 隐藏最小化提示
+function hideMinNotice() {
+    document.getElementById("minNotice").classList.remove("show");
 }
 </script>
 </body>
