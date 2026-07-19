@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Around Chengdu in Eight Hours</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Arial", sans-serif;
+        }
+        body {
+            background-color: #f0f7f4;
+            padding: 20px;
+        }
+        .window {
+            border: 2px solid #0054e9;
+            border-radius: 4px;
+            background-color: #f0f7f4;
+            max-width: 900px;
+            margin: 0 auto 30px;
+            overflow: hidden;
+            display: none;
+        }
+        .window.active {
+            display: block;
+        }
+        .title-bar {
+            background-color: #0054e9;
+            color: white;
+            padding: 6px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+        .title-bar .controls span {
+            margin-left: 8px;
+            cursor: pointer;
+        }
+        .menu-bar {
+            background-color: #e0e9e6;
+            padding: 8px 15px;
+            display: flex;
+            gap: 25px;
+            border-bottom: 1px solid #ccc;
+        }
+        .menu-bar .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 2px 0;
+        }
+        /* 核心修复：下拉菜单紧贴菜单，消除空隙 */
+        .tour-dropdown {
+            position: relative;
+        }
+        .tour-dropdown .dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-top: none;
+            min-width: 130px;
+            display: none;
+            z-index: 999;
+        }
+        .tour-dropdown:hover .dropdown {
+            display: block;
+        }
+        .tour-dropdown .dropdown div {
+            padding: 6px 12px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .tour-dropdown .dropdown div:hover {
+            background-color: #0054e9;
+            color: #fff;
+        }
+        .content {
+            padding: 20px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        .welcome-text {
+            margin-bottom: 20px;
+        }
+        .globe-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .globe {
+            width: 200px;
+            height: auto;
+        }
+
+        /* 选择弹窗 */
+        .selection-popup {
+            border: 2px solid #0054e9;
+            border-radius: 4px;
+            background-color: #f0f7f4;
+            padding: 40px 20px;
+            text-align: center;
+            max-width: 900px;
+            margin: 30px auto;
+            display: none;
+        }
+        .selection-popup.active {
+            display: block;
+        }
+        .selection-title {
+            font-size: 36px;
+            font-weight: bold;
+            color: #0054e9;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            margin-bottom: 10px;
+        }
+        .city-name {
+            font-size: 60px;
+            font-weight: bold;
+            color: #e67e22;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            background-color: #f1c40f;
+            display: inline-block;
+            padding: 5px 20px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .lets-go {
+            background-color: #87e8de;
+            color: #2c3e50;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            display: inline-block;
+            transform: rotate(-5deg);
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .chengdu-content {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            font-size: 16px;
+            line-height: 1.7;
+        }
+        .text-column {
+            flex: 2;
+        }
+        .image-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .image-placeholder {
+            width: 100%;
+            height: 180px;
+            background-color: #e0e9e6;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 14px;
+        }
+        .line-number {
+            color: #666;
+            font-size: 13px;
+            margin-right: 8px;
+        }
+        .back-button {
+            text-align: right;
+            padding: 10px 20px;
+            border-top: 1px solid #ccc;
+            font-size: 14px;
+            color: #0054e9;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 1. 欢迎页（默认显示） -->
+<div class="window active" id="welcomePage">
+    <div class="title-bar">
+        <span>Around Chengdu in Eight Hours</span>
+        <div class="controls">
+            <span>−</span><span>□</span><span>✕</span>
+        </div>
+    </div>
+    <div class="menu-bar">
+        <div class="menu-item tour-dropdown">
+            <span>🗺️ Tour</span>
+            <div class="dropdown">
+                <div onclick="goToChengdu()">Jinli</div>
+                <div onclick="goToChengdu()">Kuanzhai Alleys</div>
+                <div onclick="goToChengdu()">Chunxi Road</div>
+                <div onclick="goToChengdu()">Panda Base</div>
+                <div onclick="goToChengdu()">Others</div>
+            </div>
+        </div>
+        <div class="menu-item"><span>📷 Camera</span></div>
+        <div class="menu-item"><span>🖨️ Print</span></div>
+    </div>
+    <div class="content">
+        <div class="welcome-text">
+            Welcome to "Around Chengdu in Eight Hours". I'm your tour guide, Robin. Have you noticed the "Tour" icon at the top of the page? Just click on it, and you can visit Jinli, Kuanzhai Alleys, Chunxi Road, the Panda Base and more in only eight hours!
+        </div>
+        <div class="globe-container">
+            <img src="https://i.imgur.com/8ZkFZ7H.png" alt="Globe with airplane" class="globe">
+        </div>
+    </div>
+</div>
+
+<!-- 2. 选择页面（点击Tour后显示） -->
+<div class="selection-popup" id="choosePage">
+    <div class="selection-title">YOU HAVE CHOSEN:</div>
+    <div class="city-name">CHENGDU</div>
+    <div class="lets-go">Let's go!</div>
+</div>
+
+<!-- 3. 成都正文页面（3秒后自动显示） -->
+<div class="window" id="contentPage">
+    <div class="title-bar">
+        <span>Around Chengdu in Eight Hours - Chengdu</span>
+        <div class="controls">
+            <span>−</span><span>□</span><span>✕</span>
+        </div>
+    </div>
+    <div class="menu-bar">
+        <div class="menu-item tour-dropdown">
+            <span>🗺️ Tour</span>
+            <div class="dropdown">
+                <div>Jinli</div>
+                <div>Kuanzhai Alleys</div>
+                <div>Chunxi Road</div>
+                <div>Panda Base</div>
+                <div>Others</div>
+            </div>
+        </div>
+        <div class="menu-item"><span>📷 Camera</span></div>
+        <div class="menu-item"><span>🖨️ Print</span></div>
+    </div>
+    <div class="chengdu-content">
+        <div class="text-column">
+            <p><span class="line-number">5</span>Here we are in "the City of Hibiscus"—Chengdu, the capital of Sichuan Province, known as the "Land of Abundance".</p>
+            <br>
+            <p>Jinli Ancient Street, the world-famous old street of Western Sichuan, is right next to Wuhou Temple. There are many traditional teahouses, spicy snack stalls and folk craft shops here, where you can taste authentic Sichuan flavors and feel the charm of ancient Bashu culture.</p>
+            <br>
+            <p><span class="line-number">10</span>Further on is Chunxi Road & IFS. Every year, millions of people gather here to shop, eat hot pot and take photos with the giant panda sculpture climbing the wall. It's exciting to see the neon lights lighting up the whole street at night!</p>
+            <br>
+            <p>In the northwest of the city is the Chengdu Research Base of Giant Panda Breeding. With lush bamboo forests, gentle streams and cute pandas rolling around, it's a good place to relax and get close to these national treasures after a hard day's walking.</p>
+            <br>
+            <p><span class="line-number">15</span>When you visit Chengdu, don't miss Du Fu Thatched Cottage. It has been famous for its poetic culture since the Tang Dynasty. Have you ever heard of the poem *Thatched Cottage Broken by the Autumn Wind*? It was written right here by the great poet Du Fu, and the quiet gardens still carry the fragrance of poetry.</p>
+            <br>
+            <p><span class="line-number">20</span>OK, so much for Chengdu. There's a "Back" icon at the bottom of the page. Click on it, pick another spot like Kuanzhai Alleys or the Jinsha Site, and then start your new tour!</p>
+        </div>
+        <div class="image-column">
+            <div class="image-placeholder">[Jinli Ancient Street Photo]</div>
+            <div class="image-placeholder">[Panda Base Photo]</div>
+            <div class="image-placeholder">[Du Fu Cottage Photo]</div>
+        </div>
+    </div>
+    <div class="back-button">↩️ Back</div>
+</div>
+
+<script>
+// 点击 Tour 菜单后进入选择页
+function goToChengdu() {
+    document.getElementById('welcomePage').classList.remove('active');
+    document.getElementById('choosePage').classList.add('active');
+    
+    // 3秒后自动跳转正文
+    setTimeout(function() {
+        document.getElementById('choosePage').classList.remove('active');
+        document.getElementById('contentPage').classList.add('active');
+    }, 3000);
+}
+</script>
+</body>
+</html>
