@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Around Chengdu in Eight Hours</title>
+<title>Around the World in Eight Hours</title>
 <style>
     * {
         margin: 0;
@@ -85,6 +85,21 @@
     .login-btn:hover {
         background: #0043bd;
     }
+    /* 跳过登录按钮样式 */
+    .skip-login-btn {
+        width: 100%;
+        height: 42px;
+        background: #6c757d;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+        margin-top: 12px;
+    }
+    .skip-login-btn:hover {
+        background: #5a6268;
+    }
     /* 窗口基础样式 */
     .window {
         border: 2px solid #0054e9;
@@ -108,7 +123,7 @@
         align-items: center;
         font-size: 14px;
     }
-    /* 右上角用户信息区域（登录后显示） */
+    /* 右上角用户信息区域 */
     .user-area {
         display: none;
         align-items: center;
@@ -120,17 +135,16 @@
         height: 26px;
         border-radius: 50%;
         border: 1px #fff solid;
-        /* 占位，后续替换图片地址 */
         background: #ddd;
     }
     .title-bar .controls span {
         margin-left: 8px;
         cursor: pointer;
         padding: 2px 6px;
-        border-radius: 2px;
+        border-radius 2px;
     }
     .title-bar .controls span:hover {
-        background: rgba(255,255,0.2);
+        background: rgba(255,255,255,0.2);
     }
     /* 顶部菜单栏 */
     .menu-bar {
@@ -179,7 +193,7 @@
     .tour-dropdown:hover .dropdown {
         display: block;
     }
-    /* 菜单项通用 - 默认文字黑色，不会空白看不见 */
+    /* 菜单项通用 */
     .dropdown-item {
         position: relative;
         padding: 7px 14px;
@@ -193,7 +207,7 @@
         background-color: #0054e9;
         color: #fff;
     }
-    /* 二级/三级右侧子菜单 + 上下缓冲 */
+    /* 二级/三级右侧子菜单 */
     .submenu {
         position: absolute;
         top: -5px;
@@ -209,7 +223,7 @@
     .dropdown-item:hover > .submenu {
         display: block;
     }
-    /* 页面正文区域 */
+    /* 首页正文区域 */
     .content {
         padding: 20px;
         font-size: 16px;
@@ -226,7 +240,7 @@
         width: 200px;
         height: auto;
     }
-    /* 选择弹窗（最高层级，不会被菜单遮挡） */
+    /* 城市选择弹窗 原版样式 */
     .selection-popup {
         border: 2px solid #0054e9;
         border-radius: 4px;
@@ -238,6 +252,7 @@
         display: none;
         position: relative;
         z-index: 10000;
+        background-image: radial-gradient(circle, #fff 0%, #f0f7f4 100%);
     }
     .selection-popup.active {
         display: block;
@@ -254,27 +269,29 @@
         font-weight: bold;
         color: #e67e22;
         text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
-        background-color: #f1c40f;
+        background: linear-gradient(135deg, #f1c40f 0%, #f39c12 100%);
         display: inline-block;
         padding: 5px 20px;
         border-radius: 4px;
         margin-bottom: 20px;
+        transform: rotate(-2deg);
     }
-    /* Let's go 按钮 */
+    /* 原版Let's go艺术按钮 */
     .lets-go {
         background-color: #87e8de;
-        color: #2c3e50;
-        padding: 8px 20px;
-        border-radius: 20px;
+        color: #2980b9;
+        padding: 6px 18px;
+        border-radius: 12px;
         font-size: 20px;
         font-weight: bold;
+        font-family: "Comic Sans MS", cursive, sans-serif;
         display: inline-block;
-        transform: rotate(-5deg);
-        box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        transform: rotate(-8deg);
+        box-shadow: 2px 2px 4px rgba(0,0,0,0.25);
         cursor: pointer;
     }
-    /* 成都正文双栏布局 */
-    .chengdu-content {
+    /* 城市页面统一双栏布局 */
+    .city-content {
         display: flex;
         gap: 20px;
         padding: 20px;
@@ -302,11 +319,6 @@
         color: #666;
         font-size: 14px;
     }
-    .line-number {
-        color: #666;
-        font-size: 13px;
-        margin-right: 8px;
-    }
     /* 返回按钮 */
     .back-button {
         text-align: right;
@@ -319,7 +331,7 @@
     .back-button:hover {
         background: #e8f0fb;
     }
-    /* 最小化全屏提示层 */
+    /* 最小化提示层 */
     .min-notice {
         width: 100%;
         height: 100vh;
@@ -340,10 +352,9 @@
 </style>
 </head>
 <body>
-<!-- 登录遮罩（页面初始默认显示） -->
+<!-- 登录全屏遮罩 -->
 <div class="login-mask" id="loginMask">
     <div class="login-box">
-        <!-- 修改标题为 Login -->
         <h3 class="login-title">Login</h3>
         <div class="login-item">
             <label>账号</label>
@@ -357,25 +368,25 @@
             <label>验证码</label>
             <div class="code-row">
                 <input type="text" id="userCode" placeholder="输入验证码">
-                <img class="code-img" id="codeImg" alt="验证码" onclick="refreshCode()">
+                <img class="code-img" id="codeImg" onclick="refreshCode()">
             </div>
         </div>
         <button class="login-btn" onclick="loginCheck()">登录</button>
+        <!-- 新增跳过登录按钮 -->
+        <button class="skip-login-btn" onclick="skipLogin()">Skip Login 跳过登录</button>
     </div>
 </div>
 
-<!-- 最小化全屏文字界面 -->
+<!-- 最小化提示文字 -->
 <div class="min-notice" id="minNotice">
     Created by 'picture1' in 'picture2'.
 </div>
 
-<!-- 页面1：欢迎首页（登录成功才显示） -->
+<!-- 首页欢迎窗口 -->
 <div class="window" id="welcomePage">
     <div class="title-bar">
-        <span>Around Chengdu in Eight Hours</span>
-        <!-- 登录后显示头像+用户名区域 -->
+        <span>Around the World in Eight Hours</span>
         <div class="user-area" id="userAreaWelcome">
-            <!-- 头像占位，后续替换src为你的图片 -->
             <img class="avatar" id="avatarWelcome" src="" alt="用户头像">
             <span>Hello, czy!</span>
         </div>
@@ -396,6 +407,7 @@
                             China ▸
                             <div class="submenu">
                                 <div class="dropdown-item" onclick="goToChengdu()">Chengdu</div>
+                                <div class="dropdown-item" onclick="goToChongqing()">Chongqing</div>
                                 <div class="dropdown-item">Beijing</div>
                                 <div class="dropdown-item">Shanghai</div>
                                 <div class="dropdown-item">Guangzhou</div>
@@ -409,7 +421,12 @@
                 </div>
                 <div class="dropdown-item">Africa</div>
                 <div class="dropdown-item">Europe</div>
-                <div class="dropdown-item">America</div>
+                <div class="dropdown-item">
+                    America ▸
+                    <div class="submenu">
+                        <div class="dropdown-item" onclick="goToNewYork()">New York</div>
+                    </div>
+                </div>
                 <div class="dropdown-item">Others</div>
             </div>
         </div>
@@ -418,7 +435,7 @@
     </div>
     <div class="content">
         <div class="welcome-text">
-            Welcome to "Around Chengdu in Eight Hours". I'm your tour guide, Robin. Have you noticed the "Tour" icon at the top of the page? Just click on it, and you can visit Asia, Africa, Europe, America and more in only eight hours!
+            Welcome to "Around the World in Eight Hours". I'm your tour guide, Robin. Have you noticed the "Tour" icon at the top of the page? Just click on it, and you can visit Asia, Africa, Europe, America and more in only eight hours! We can travel to Chengdu, Chongqing and New York now.
         </div>
         <div class="globe-container">
             <img src="https://i.imgur.com/8ZkFZ7H.png" alt="Globe with airplane" class="globe" />
@@ -426,18 +443,31 @@
     </div>
 </div>
 
-<!-- 页面2：选中Chengdu过渡弹窗 -->
+<!-- 成都选择弹窗 -->
 <div class="selection-popup" id="choosePage">
     <div class="selection-title">YOU HAVE CHOSEN:</div>
     <div class="city-name">CHENGDU</div>
     <div class="lets-go" onclick="skipTimer()">Let's go!</div>
 </div>
 
-<!-- 页面3：成都正文详情页 -->
+<!-- 重庆选择弹窗 -->
+<div class="selection-popup" id="chooseChongqing">
+    <div class="selection-title">YOU HAVE CHOSEN:</div>
+    <div class="city-name">CHONGQING</div>
+    <div class="lets-go" onclick="skipTimer()">Let's go!</div>
+</div>
+
+<!-- 纽约选择弹窗【新增】 -->
+<div class="selection-popup" id="chooseNewYork">
+    <div class="selection-title">YOU HAVE CHOSEN:</div>
+    <div class="city-name">NEW YORK</div>
+    <div class="lets-go" onclick="skipTimer()">Let's go!</div>
+</div>
+
+<!-- 成都详情页（无行号完整课文） -->
 <div class="window" id="contentPage">
     <div class="title-bar">
-        <span>Around Chengdu in Eight Hours - Chengdu</span>
-        <!-- 同步添加用户头像文字区域 -->
+        <span>Around the World in Eight Hours - Chengdu</span>
         <div class="user-area" id="userAreaContent">
             <img class="avatar" id="avatarContent" src="" alt="用户头像">
             <span>Hello, czy!</span>
@@ -459,6 +489,7 @@
                             China ▸
                             <div class="submenu">
                                 <div class="dropdown-item" onclick="goToChengdu()">Chengdu</div>
+                                <div class="dropdown-item" onclick="goToChongqing()">Chongqing</div>
                                 <div class="dropdown-item">Beijing</div>
                                 <div class="dropdown-item">Shanghai</div>
                                 <div class="dropdown-item">Guangzhou</div>
@@ -472,31 +503,194 @@
                 </div>
                 <div class="dropdown-item">Africa</div>
                 <div class="dropdown-item">Europe</div>
-                <div class="dropdown-item">America</div>
+                <div class="dropdown-item">
+                    America ▸
+                    <div class="submenu">
+                        <div class="dropdown-item" onclick="goToNewYork()">New York</div>
+                    </div>
+                </div>
                 <div class="dropdown-item">Others</div>
             </div>
         </div>
         <div class="menu-item"><span>📷 Camera</span></div>
         <div class="menu-item"><span>🖨️ Print</span></div>
     </div>
-    <div class="chengdu-content">
+    <div class="city-content">
         <div class="text-column">
-            <p><span class="line-number">5</span>Here we are in "the City of Hibiscus"—Chengdu, the capital of Sichuan Province, known as the "Land of Abundance".</p>
+            <p>Here we are in "the City of Hibiscus"—Chengdu, the capital of Sichuan Province, widely known as the warm "Land of Abundance".</p>
             <br>
-            <p>Jinli Ancient Street, the world-famous old street of Western Sichuan, is right next to Wuhou Temple. There are many traditional teahouses, spicy snack stalls and folk craft shops here, where you can taste authentic Sichuan flavors and feel the charm of ancient Bashu culture.</p>
+            <p>Our first downtown stop is Chunxi Road and Taikoo Li. The huge climbing panda sculpture on the IFS building is the most popular landmark here. Thousands of tourists come to take photos with it every day. Modern shopping malls mix with cute panda snacks and local small food stalls.</p>
             <br>
-            <p><span class="line-number">10</span>Further on is Chunxi Road & IFS. Every year, millions of people gather here to shop, eat hot pot and take photos with the giant panda sculpture climbing the wall. It's exciting to see the neon lights lighting up the whole street at night!</p>
+            <p>Then we walk into Kuanzhai Alleys. They are old western Sichuan folk houses with grey stone roads and quiet wooden yards. Local elders sit outside and drink jasmine tea. You can slow down and enjoy the relaxing old Chengdu lifestyle here.</p>
             <br>
-            <p>In the northwest of the city is the Chengdu Research Base of Giant Panda Breeding. With lush bamboo forests, gentle streams and cute pandas rolling around, it's a good place to relax and get close to these national treasures after a hard day's walking.</p>
+            <p>Next stop is Du Fu Thatched Cottage. It’s a quiet bamboo garden, once the home of Tang poet Du Fu. We can visit the Poetry History Hall and read thousands of stone poems on the tablets. Every corner is full of poetic beauty.</p>
             <br>
-            <p><span class="line-number">15</span>When you visit Chengdu, don't miss Du Fu Thatched Cottage. It has been famous for its poetic culture since the Tang Dynasty. Have you ever heard of the poem *Thatched Cottage Broken by the Autumn Wind*?</p>
+            <p>My favourite place today is Chengdu Research Base of Giant Panda Breeding. Fluffy pandas lie in thick bamboo and eat fresh bamboo shoots all day. We also met colourful peacocks walking freely in the woods. Pandas are the sweet symbol of this city.</p>
             <br>
-            <p><span class="line-number">20</span>OK, so much for Chengdu. There's a "Back" icon at the bottom of the page. Click on it, pick another spot like Kuanzhai Alleys or the Jinsha Site, and then start your new tour!</p>
+            <p>We also took a day trip to Dujiangyan, a 2,000-year-old water project. The Yuzui Fish Mouth divides the Min River to protect the plain. After sightseeing, we tasted spicy soft tofu, a special local snack.</p>
+            <br>
+            <p>Don’t forget Sichuan hot pot! Red spicy soup, fried snacks and marinated eggs are everywhere. Food carries the warm and lively spirit of Chengdu.</p>
+            <br>
+            <p>OK, so much for our eight-hour tour of Chengdu. There's a "Back" icon at the bottom of the page. Click it, choose Chongqing or New York from the menu, and start your new trip!</p>
         </div>
         <div class="image-column">
-            <div class="image-placeholder">[Jinli Ancient Street Photo]</div>
-            <div class="image-placeholder">[Panda Base Photo]</div>
-            <div class="image-placeholder">[Du Fu Cottage Photo]</div>
+            <div class="image-placeholder">[Chunxi Road IFS Panda Photo]</div>
+            <div class="image-placeholder">[Giant Panda Base Bamboo Photo]</div>
+            <div class="image-placeholder">[Du Fu Thatched Cottage Garden]</div>
+        </div>
+    </div>
+    <div class="back-button" onclick="backToHome()">↩️ Back</div>
+</div>
+
+<!-- 重庆详情页（无行完整课文） -->
+<div class="window" id="chongqingPage">
+    <div class="title-bar">
+        <span>Around the World in Eight Hours - Chongqing</span>
+        <div class="user-area" id="userAreaChongqing">
+            <img class="avatar" id="avatarChongqing" src="" alt="用户头像">
+            <span>Hello, czy!</span>
+        </div>
+        <div class="controls">
+            <span onclick="windowMin()">−</span>
+            <span onclick="windowMax()">□</span>
+            <span onclick="closeAllWindow()">✕</span>
+        </div>
+    </div>
+    <div class="menu-bar">
+        <div class="menu-item tour-dropdown">
+            <span class="menu-text">🗺️ Tour</span>
+            <div class="dropdown">
+                <div class="dropdown-item">
+                    Asia ▸
+                    <div class="submenu">
+                        <div class="dropdown-item">
+                            China ▸
+                            <div class="submenu">
+                                <div class="dropdown-item" onclick="goToChengdu()">Chengdu</div>
+                                <div class="dropdown-item" onclick="goToChongqing()">Chongqing</div>
+                                <div class="dropdown-item">Beijing</div>
+                                <div class="dropdown-item">Shanghai</div>
+                                <div class="dropdown-item">Guangzhou</div>
+                            </div>
+                        </div>
+                        <div class="dropdown-item">Japan</div>
+                        <div class="dropdown-item">Korea</div>
+                        <div class="dropdown-item">India</div>
+                        <div class="dropdown-item">Thailand</div>
+                    </div>
+                </div>
+                <div class="dropdown-item">Africa</div>
+                <div class="dropdown-item">Europe</div>
+                <div class="dropdown-item">
+                    America ▸
+                    <div class="submenu">
+                        <div class="dropdown-item" onclick="goToNewYork()">New York</div>
+                    </div>
+                </div>
+                <div class="dropdown-item">Others</div>
+            </div>
+        </div>
+        <div class="menu-item"><span>📷 Camera</span></div>
+        <div class="menu-item"><span>🖨️ Print</span></div>
+    </div>
+    <div class="city-content">
+        <div class="text-column">
+            <p>Hi dear visitors, I’m your tour guide Robin. Welcome to Chongqing, the famous Magic Mountain City, surrounded by Yangtze River and Jialing River.</p>
+            <br>
+            <p>We first arrive at Jiefangbei, the People’s Liberation Monument. It stands in the busy central shopping area. Nearby we visited chocolate art museum with a huge elephant sculpture for interesting photos.</p>
+            <br>
+            <p>Then we climb stone steps of Shancheng Lane and Shibati. Winding stone roads, old folk houses and colourful wall paintings show the real old Chongqing life. Standing on the high platform, we can enjoy full river views.</p>
+            <br>
+            <p>Liziba Light Rail is the world-famous special sight here. The train runs straight through a tall residential building. You cannot find such amazing traffic view in any other city.</p>
+            <br>
+            <p>When evening comes, we visit Guotai Art Centre, which local people call Chopsticks Building. Later we walk to Hongyadong. When all lights turn on, the riverside stilt houses look like a fairyland cartoon town.</p>
+            <br>
+            <p>Bayi Food Street is our food paradise. Spicy butter hot pot, pea noodles and glutinous fried cakes are all local classics. Strong hot flavours match warm, bold Chongqing people.</p>
+            <br>
+            <p>OK, that’s our eight-hour trip of mountain city Chongqing. Click the "Back" button at the bottom, pick Chengdu or New York in the tour menu, and start your next trip!</p>
+        </div>
+        <div class="image-column">
+            <div class="image-placeholder">[Jiefangbei Monument Full View]</div>
+            <div class="image-placeholder">[Hongyadong Night River View]</div>
+            <div class="image-placeholder">[Shancheng Lane Stone Steps]</div>
+        </div>
+    </div>
+    <div class="back-button" onclick="backToHome()">↩️ Back</div>
+</div>
+
+<!-- 纽约New York全新页面 -->
+<div class="window" id="newYorkPage">
+    <div class="title-bar">
+        <span>Around the World in Eight Hours - New York</span>
+        <div class="user-area" id="userAreaNY">
+            <img class="avatar" id="avatarNY" src="" alt="用户头像">
+            <span>Hello, czy!</span>
+        </div>
+        <div class="controls">
+            <span onclick="windowMin()">−</span>
+            <span onclick="windowMax()">□</span>
+            <span onclick="closeAllWindow()">✕</span>
+        </div>
+    </div>
+    <div class="menu-bar">
+        <div class="menu-item tour-dropdown">
+            <span class="menu-text">🗺️ Tour</span>
+            <div class="dropdown">
+                <div class="dropdown-item">
+                    Asia ▸
+                    <div class="submenu">
+                        <div class="dropdown-item">
+                            China ▸
+                            <div class="submenu">
+                                <div class="dropdown-item" onclick="goToChengdu()">Chengdu</div>
+                                <div class="dropdown-item" onclick="goToChongqing()">Chongqing</div>
+                                <div class="dropdown-item">Beijing</div>
+                                <div class="dropdown-item">Shanghai</div>
+                                <div class="dropdown-item">Guangzhou</div>
+                            </div>
+                        </div>
+                        <div class="dropdown-item">Japan</div>
+                        <div class="dropdown-item">Korea</div>
+                        <div class="dropdown-item">India</div>
+                        <div class="dropdown-item">Thailand</div>
+                    </div>
+                </div>
+                <div class="dropdown-item">Africa</div>
+                <div class="dropdown-item">Europe</div>
+                <div class="dropdown-item">
+                    America ▸
+                    <div class="submenu">
+                        <div class="dropdown-item" onclick="goToNewYork()">New York</div>
+                    </div>
+                </div>
+                <div class="dropdown-item">Others</div>
+            </div>
+        </div>
+        <div class="menu-item"><span>📷 Camera</span></div>
+        <div class="menu-item"><span>🖨️ Print</span></div>
+    </div>
+    <div class="city-content">
+        <div class="text-column">
+            <p>Hello everyone, I’m Robin, your tour guide. Welcome to New York, the biggest city in the United States of America. People also call it the Big Apple.</p>
+            <br>
+            <p>Our first stop is Wall Street. It is the world’s most famous financial centre. Many banks and big companies stand along this busy street. A bronze bull statue sits at the street corner, and thousands of visitors take photos with it every day.</p>
+            <br>
+            <p>Then we take a ferry to visit the Statue of Liberty. It stands on a small island in the harbour. The huge lady holds a torch high in her right hand. She is a famous symbol of freedom for Americans.</p>
+            <br>
+            <p>Next we walk into Central Park. It is a huge green park right in the middle of Manhattan. People run, ride bikes, row boats on the lake and have picnic here. It is a quiet place away from noisy tall buildings.</p>
+            <br>
+            <p>Times Square is full of bright neon screens all day and night. Crowds of tourists walk between shops and restaurants. Broadway theatres are just nearby, where we can watch wonderful musical shows.</p>
+            <br>
+            <p>Don’t miss the Empire State Building. We can take the lift to the top floor and enjoy the whole city view. All streets, rivers and skyscrapers spread out under our feet.</p>
+            <br>
+            <p>New York has different kinds of food from all over the world. We can taste American burgers, Italian pizza and Chinese noodles in one street. It is a city full of different cultures.</p>
+            <br>
+            <p>That’s our eight-hour tour of New York. Click the Back button at the bottom, and pick Chengdu or Chongqing to start your next wonderful trip!</p>
+        </div>
+        <div class="image-column">
+            <div class="image-placeholder">[Statue of Liberty Photo]</div>
+            <div class="image-placeholder">[Times Square Neon View]</div>
+            <div class="image-placeholder">[Central Park Lake]</div>
         </div>
     </div>
     <div class="back-button" onclick="backToHome()">↩️ Back</div>
@@ -505,7 +699,7 @@
 <script>
 // 全局定时器
 let waitTimer = null;
-// 10张验证码图片数组（全部文字ilovemath）
+// 验证码图片数组
 const codeImgList = [
     "https://picsum.photos/id/1011/120/38",
     "https://picsum.photos/id/1012/120/38",
@@ -518,7 +712,6 @@ const codeImgList = [
     "https://picsum.photos/id/1019/120/38",
     "https://picsum.photos/id/1020/120/38"
 ];
-// 页面加载随机验证码图片
 window.onload = function(){
     refreshCode();
 }
@@ -527,12 +720,21 @@ function refreshCode(){
     const randomIdx = Math.floor(Math.random() * codeImgList.length);
     document.getElementById("codeImg").src = codeImgList[randomIdx];
 }
-// 登录校验函数
+// 【新增跳过登录函数】一键跳过登录，直接进入首页
+function skipLogin(){
+    document.getElementById("loginMask").style.display = "none";
+    document.getElementById("welcomePage").classList.add("active");
+    // 全部用户头像栏显示
+    document.getElementById("userAreaWelcome").style.display = "flex";
+    document.getElementById("userAreaContent").style.display = "flex";
+    document.getElementById("userAreaChongqing").style.display = "flex";
+    document.getElementById("userAreaNY").style.display = "flex";
+}
+// 登录校验
 function loginCheck(){
     const acc = document.getElementById("userAccount").value.trim();
     const pwd = document.getElementById("userPwd").value.trim();
     const code = document.getElementById("userCode").value.trim().toLowerCase();
-    // 校验规则
     if(acc !== "czy@tour"){
         alert("账号错误，请重新输入");
         return;
@@ -547,60 +749,81 @@ function loginCheck(){
         document.getElementById("userCode").value = "";
         return;
     }
-    // 全部正确：关闭登录弹窗，显示欢迎页 + 展示头像用户名区域
-    document.getElementById("loginMask").style.display = "none";
-    document.getElementById("welcomePage").classList.add("active");
-    // 显示右上角Hello+头像
-    document.getElementById("userAreaWelcome").style.display = "flex";
-    document.getElementById("userAreaContent").style.display = "flex";
+    // 登录成功
+    skipLogin();
 }
-// 点击Chengdu：重置所有页面，避免重叠bug
+// 跳转成都弹窗
 function goToChengdu() {
     clearTimeout(waitTimer);
-    document.querySelectorAll(".window").forEach(el => el.classList.remove("active"));
-    document.getElementById("choosePage").classList.remove("active");
-    hideMinNotice();
+    hideAllWindows();
     document.getElementById("choosePage").classList.add("active");
     waitTimer = setTimeout(function() {
         skipTimer();
     }, 3000);
 }
-// Let's go 一键跳过等待
+// 跳转重庆弹窗
+function goToChongqing() {
+    clearTimeout(waitTimer);
+    hideAllWindows();
+    document.getElementById("chooseChongqing").classList.add("active");
+    waitTimer = setTimeout(function() {
+        skipTimer();
+    }, 3000);
+}
+// 跳转纽约弹窗【新增】
+function goToNewYork() {
+    clearTimeout(waitTimer);
+    hideAllWindows();
+    document.getElementById("chooseNewYork").classList.add("active");
+    waitTimer = setTimeout(function() {
+        skipTimer();
+    }, 3000);
+}
+// 跳过倒计时
 function skipTimer() {
     clearTimeout(waitTimer);
     document.getElementById("choosePage").classList.remove("active");
-    document.getElementById("contentPage").classList.add("active");
+    document.getElementById("chooseChongqing").classList.remove("active");
+    document.getElementById("chooseNewYork").classList.remove("active");
+    if(document.getElementById("choosePage").style.display !== "none"){
+        document.getElementById("contentPage").classList.add("active");
+    }else if(document.getElementById("chooseChongqing").style.display !== "none"){
+        document.getElementById("chongqingPage").classList.add("active");
+    }else{
+        document.getElementById("newYorkPage").classList.add("active");
+    }
 }
 // 返回首页
 function backToHome() {
     clearTimeout(waitTimer);
     hideMinNotice();
-    document.querySelectorAll(".window").forEach(el => el.classList.remove("active"));
-    document.getElementById("choosePage").classList.remove("active");
+    hideAllWindows();
     document.getElementById("welcomePage").classList.add("active");
+}
+// 统一隐藏所有窗口
+function hideAllWindows(){
+    document.querySelectorAll(".window").forEach(el => el.classList.remove("active"));
+    document.querySelectorAll(".selection-popup").forEach(el => el.classList.remove("active"));
 }
 // 关闭全部窗口
 function closeAllWindow() {
     clearTimeout(waitTimer);
     hideMinNotice();
+    hideAllWindows();
     document.getElementById("welcomePage").style.display = "none";
-    document.getElementById("choosePage").style.display = "none";
-    document.getElementById("contentPage").style.display = "none";
     alert("网页窗口已关闭，刷新页面可重新打开");
 }
 // 最小化
 function windowMin() {
     clearTimeout(waitTimer);
-    document.querySelectorAll(".window").forEach(el => el.style.display = "none");
-    document.getElementById("choosePage").style.display = "none";
+    hideAllWindows();
     document.getElementById("minNotice").classList.add("show");
 }
-// 【修复最大化BUG】标准化清理流程，无异常跳转
+// 最大化
 function windowMax() {
     clearTimeout(waitTimer);
     hideMinNotice();
-    document.querySelectorAll(".window").forEach(el => el.classList.remove("active"));
-    document.getElementById("choosePage").classList.remove("active");
+    hideAllWindows();
     document.getElementById("welcomePage").classList.add("active");
 }
 // 隐藏最小化提示
