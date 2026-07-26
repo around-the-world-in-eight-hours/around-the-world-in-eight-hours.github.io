@@ -141,7 +141,7 @@
         margin-left: 8px;
         cursor: pointer;
         padding: 2px 6px;
-        border-radius 2px;
+        border-radius: 2px;
     }
     .title-bar .controls span:hover {
         background: rgba(255,255,255,0.2);
@@ -287,7 +287,7 @@
         font-family: "Comic Sans MS", cursive, sans-serif;
         display: inline-block;
         transform: rotate(-8deg);
-        box-shadow: 2px 2px 4px rgba(0,0,0,0.25);
+        box-shadow: 2px 2px 4px rgba(0,0,0.25);
         cursor: pointer;
     }
     /* 城市页面统一双栏布局 */
@@ -376,12 +376,10 @@
         <button class="skip-login-btn" onclick="skipLogin()">Skip Login 跳过登录</button>
     </div>
 </div>
-
 <!-- 最小化提示文字 -->
 <div class="min-notice" id="minNotice">
     Created by 'picture1' in 'picture2'.
 </div>
-
 <!-- 首页欢迎窗口 -->
 <div class="window" id="welcomePage">
     <div class="title-bar">
@@ -442,29 +440,25 @@
         </div>
     </div>
 </div>
-
 <!-- 成都选择弹窗 -->
 <div class="selection-popup" id="choosePage">
     <div class="selection-title">YOU HAVE CHOSEN:</div>
     <div class="city-name">CHENGDU</div>
     <div class="lets-go" onclick="skipTimer()">Let's go!</div>
 </div>
-
 <!-- 重庆选择弹窗 -->
 <div class="selection-popup" id="chooseChongqing">
     <div class="selection-title">YOU HAVE CHOSEN:</div>
     <div class="city-name">CHONGQING</div>
     <div class="lets-go" onclick="skipTimer()">Let's go!</div>
 </div>
-
-<!-- 纽约选择弹窗【新增】 -->
+<!-- 纽约选择弹窗 -->
 <div class="selection-popup" id="chooseNewYork">
     <div class="selection-title">YOU HAVE CHOSEN:</div>
     <div class="city-name">NEW YORK</div>
     <div class="lets-go" onclick="skipTimer()">Let's go!</div>
 </div>
-
-<!-- 成都详情页（无行号完整课文） -->
+<!-- 成都详情页 -->
 <div class="window" id="contentPage">
     <div class="title-bar">
         <span>Around the World in Eight Hours - Chengdu</span>
@@ -541,8 +535,7 @@
     </div>
     <div class="back-button" onclick="backToHome()">↩️ Back</div>
 </div>
-
-<!-- 重庆详情页（无行完整课文） -->
+<!-- 重庆详情页 -->
 <div class="window" id="chongqingPage">
     <div class="title-bar">
         <span>Around the World in Eight Hours - Chongqing</span>
@@ -617,8 +610,7 @@
     </div>
     <div class="back-button" onclick="backToHome()">↩️ Back</div>
 </div>
-
-<!-- 纽约New York全新页面 -->
+<!-- 纽约New York页面 -->
 <div class="window" id="newYorkPage">
     <div class="title-bar">
         <span>Around the World in Eight Hours - New York</span>
@@ -695,22 +687,21 @@
     </div>
     <div class="back-button" onclick="backToHome()">↩️ Back</div>
 </div>
-
 <script>
 // 全局定时器
 let waitTimer = null;
-// 验证码图片数组
+// 【已替换为GitHub raw直链 1~10张验证码图片】
 const codeImgList = [
-    "https://picsum.photos/id/1011/120/38",
-    "https://picsum.photos/id/1012/120/38",
-    "https://picsum.photos/id/1013/120/38",
-    "https://picsum.photos/id/1014/120/38",
-    "https://picsum.photos/id/1015/120/38",
-    "https://picsum.photos/id/1016/120/38",
-    "https://picsum.photos/id/1017/120/38",
-    "https://picsum.photos/id/1018/120/38",
-    "https://picsum.photos/id/1019/120/38",
-    "https://picsum.photos/id/1020/120/38"
+    "https://github.com/around-the-world-in-eight-hours/around-the-world-in-eight-hours.github.io/raw/main/ILoveMaths_Captcha1.png",
+    "https://github.com/around-the-world-in-eight-hours/around-the-world-in-eight-hours.github.io/raw/main/ILoveMaths_Captcha2.png",
+    "https://github.com/around-the-world-in-eight-hours/around-the-world-in-eight-hours.github.io/raw/main/ILoveMaths_Captcha3.png",
+    "https://github.com/around-the-world-in-eight-hours/around-the-world-in-eight-hours.github.io/raw/main/ILoveMaths_Captcha4.png",
+    "https://github.com/around-the-world-in-eight-hours/around-the-world-in-eight-hours.github.io/raw/main/ILoveMaths_Captcha5.png",
+    "https://github.com/around-the-world-in-eight-hours/around-the-world-in-eight-hours.github.io/raw/main/ILoveMaths_Captcha6.png",
+    "https://github.com/around-the-world-in-eight-hours/around-the-world-in-eight-hours.github.io/raw/main/ILoveMaths_Captcha7.png",
+    "https://github.com/around-the-world-in-eight-hours/around-the-world-in-eight-hours.github.io/raw/main/ILoveMaths_Captcha8.png",
+    "https://github.com/around-the-world-in-eight-hours/around-the-world-in-eight-hours.github.io/raw/main/ILoveMaths_Captcha9.png",
+    "https://github.com/around-the-world-in-eight-hours/around-the-world-in-eight-hours.github.io/raw/main/ILoveMaths_Captcha10.png"
 ];
 window.onload = function(){
     refreshCode();
@@ -720,7 +711,7 @@ function refreshCode(){
     const randomIdx = Math.floor(Math.random() * codeImgList.length);
     document.getElementById("codeImg").src = codeImgList[randomIdx];
 }
-// 【新增跳过登录函数】一键跳过登录，直接进入首页
+// 一键跳过登录
 function skipLogin(){
     document.getElementById("loginMask").style.display = "none";
     document.getElementById("welcomePage").classList.add("active");
@@ -749,7 +740,6 @@ function loginCheck(){
         document.getElementById("userCode").value = "";
         return;
     }
-    // 登录成功
     skipLogin();
 }
 // 跳转成都弹窗
@@ -770,7 +760,7 @@ function goToChongqing() {
         skipTimer();
     }, 3000);
 }
-// 跳转纽约弹窗【新增】
+// 跳转纽约弹窗
 function goToNewYork() {
     clearTimeout(waitTimer);
     hideAllWindows();
@@ -779,7 +769,7 @@ function goToNewYork() {
         skipTimer();
     }, 3000);
 }
-// 跳过倒计时
+// 跳过3秒倒计时直接进入城市页面
 function skipTimer() {
     clearTimeout(waitTimer);
     document.getElementById("choosePage").classList.remove("active");
@@ -800,7 +790,7 @@ function backToHome() {
     hideAllWindows();
     document.getElementById("welcomePage").classList.add("active");
 }
-// 统一隐藏所有窗口
+// 统一隐藏所有窗口和弹窗
 function hideAllWindows(){
     document.querySelectorAll(".window").forEach(el => el.classList.remove("active"));
     document.querySelectorAll(".selection-popup").forEach(el => el.classList.remove("active"));
@@ -813,13 +803,13 @@ function closeAllWindow() {
     document.getElementById("welcomePage").style.display = "none";
     alert("网页窗口已关闭，刷新页面可重新打开");
 }
-// 最小化
+// 最小化页面
 function windowMin() {
     clearTimeout(waitTimer);
     hideAllWindows();
     document.getElementById("minNotice").classList.add("show");
 }
-// 最大化
+// 最大化恢复首页
 function windowMax() {
     clearTimeout(waitTimer);
     hideMinNotice();
